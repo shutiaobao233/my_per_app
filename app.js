@@ -35,8 +35,6 @@ const els = {
 let state = loadState();
 let visibleDate = startOfMonth(new Date());
 let scrollFrame = 0;
-let bubbleDrag = null;
-let ignoreNextBubbleClick = false;
 
 function loadState() {
   try {
@@ -128,62 +126,7 @@ function setBackupMenuOpen(isOpen) {
   els.backupBubble.setAttribute("aria-expanded", String(isOpen));
 }
 
-function clampBubblePosition(x, y) {
-  const size = els.backupFloat.getBoundingClientRect();
-  const margin = 10;
-  return {
-    x: clamp(x, margin, window.innerWidth - size.width - margin),
-    y: clamp(y, margin, window.innerHeight - size.height - margin),
-  };
-}
-
-function moveBackupBubble(x, y) {
-  const position = clampBubblePosition(x, y);
-  els.backupFloat.style.left = `${position.x}px`;
-  els.backupFloat.style.top = `${position.y}px`;
-  els.backupFloat.style.right = "auto";
-  els.backupFloat.style.bottom = "auto";
-}
-
-function startBubbleDrag(event) {
-  const rect = els.backupFloat.getBoundingClientRect();
-  bubbleDrag = {
-    pointerId: event.pointerId,
-    offsetX: event.clientX - rect.left,
-    offsetY: event.clientY - rect.top,
-    startX: event.clientX,
-    startY: event.clientY,
-    moved: false,
-  };
-  els.backupBubble.setPointerCapture(event.pointerId);
-}
-
-function updateBubbleDrag(event) {
-  if (!bubbleDrag || event.pointerId !== bubbleDrag.pointerId) return;
-  const moveX = Math.abs(event.clientX - bubbleDrag.startX);
-  const moveY = Math.abs(event.clientY - bubbleDrag.startY);
-  if (moveX > 6 || moveY > 6) bubbleDrag.moved = true;
-  if (bubbleDrag.moved) {
-    setBackupMenuOpen(false);
-    moveBackupBubble(event.clientX - bubbleDrag.offsetX, event.clientY - bubbleDrag.offsetY);
-  }
-}
-
-function endBubbleDrag(event) {
-  if (!bubbleDrag || event.pointerId !== bubbleDrag.pointerId) return;
-  const wasMoved = bubbleDrag.moved;
-  bubbleDrag = null;
-  if (!wasMoved) {
-    return;
-  }
-  ignoreNextBubbleClick = true;
-  window.setTimeout(() => {
-    ignoreNextBubbleClick = false;
-  }, 120);
-}
-
 function toggleBackupMenu() {
-  if (ignoreNextBubbleClick) return;
   setBackupMenuOpen(els.backupMenu.hidden);
 }
 
@@ -238,9 +181,11 @@ function formatDate(date) {
 
 function getCalendarDays(monthDate) {
   const first = startOfMonth(monthDate);
+  const last = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
   const mondayOffset = (first.getDay() + 6) % 7;
+  const totalDays = Math.ceil((mondayOffset + last.getDate()) / 7) * 7;
   const start = addDays(first, -mondayOffset);
-  return Array.from({ length: 42 }, (_, index) => addDays(start, index));
+  return Array.from({ length: totalDays }, (_, index) => addDays(start, index));
 }
 
 function getPeriodGroups() {
@@ -528,12 +473,6 @@ function render(options = {}) {
 }
 
 els.scroller.addEventListener("scroll", scheduleVisibleUpdate, { passive: true });
-els.backupBubble.addEventListener("pointerdown", startBubbleDrag);
-els.backupBubble.addEventListener("pointermove", updateBubbleDrag);
-els.backupBubble.addEventListener("pointerup", endBubbleDrag);
-els.backupBubble.addEventListener("pointercancel", () => {
-  bubbleDrag = null;
-});
 els.backupBubble.addEventListener("click", toggleBackupMenu);
 els.exportBackup.addEventListener("click", exportBackup);
 els.importBackup.addEventListener("click", openImportPanel);
