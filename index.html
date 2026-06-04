@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f7a8b8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="&#21608;&#26399;&#35760;&#24405;" />
+    <title>&#21608;&#26399;&#35760;&#24405;</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="status-strip" aria-live="polite">
+        <div>
+          <span>&#39044;&#35745;&#19979;&#27425;</span>
+          <strong id="nextPeriodLabel">&#26242;&#26080;&#39044;&#27979;</strong>
+        </div>
+        <div>
+          <span>&#24179;&#22343;&#21608;&#26399;</span>
+          <strong id="cycleLabel">28 &#22825;</strong>
+        </div>
+        <div>
+          <span>&#32463;&#26399;&#38271;&#24230;</span>
+          <strong id="periodLengthLabel">5 &#22825;</strong>
+        </div>
+      </section>
+
+      <section class="calendar-wrap" aria-label="&#26376;&#21382;&#65292;&#21487;&#19978;&#19979;&#28369;&#21160;&#27983;&#35272;&#26376;&#20221;">
+        <div class="weekday-row" aria-hidden="true">
+          <span>&#19968;</span>
+          <span>&#20108;</span>
+          <span>&#19977;</span>
+          <span>&#22235;</span>
+          <span>&#20116;</span>
+          <span>&#20845;</span>
+          <span>&#26085;</span>
+        </div>
+        <div class="month-scroller" id="monthScroller"></div>
+      </section>
+
+      <footer class="legend" aria-label="&#22270;&#20363;">
+        <span><i class="dot period"></i>&#24050;&#26631;&#27880;</span>
+        <span><i class="dot predicted"></i>&#39044;&#27979;</span>
+        <span><i class="dot today"></i>&#20170;&#22825;</span>
+      </footer>
+    </main>
+
+    <section class="backup-float" id="backupFloat" aria-label="&#22791;&#20221;">
+      <div class="backup-menu" id="backupMenu" hidden>
+        <button type="button" id="exportBackup">&#23548;&#20986;</button>
+        <button type="button" id="importBackup">&#23548;&#20837;</button>
+      </div>
+      <p class="backup-status" id="backupStatus" aria-live="polite"></p>
+      <button class="backup-bubble" id="backupBubble" type="button" aria-expanded="false" aria-controls="backupMenu" aria-label="&#22791;&#20221;">
+        <span aria-hidden="true">&#8645;</span>
+      </button>
+    </section>
+
+    <section class="import-panel" id="importPanel" hidden aria-label="&#23548;&#20837;&#22791;&#20221;">
+      <div class="import-dialog">
+        <label for="backupText">&#31896;&#36148;&#22791;&#20221;&#25968;&#25454;</label>
+        <textarea id="backupText" rows="8" spellcheck="false"></textarea>
+        <div class="import-actions">
+          <button type="button" id="confirmImport">&#30830;&#35748;</button>
+          <button type="button" id="cancelImport">&#21462;&#28040;</button>
+        </div>
+      </div>
+    </section>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
